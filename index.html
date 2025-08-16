@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Thorlango — Learn with Thunder ⚡</title>
+<style>
+  :root{
+    --bg:#0e1222;--card:#151a2c;--text:#e9ebff;--muted:#aab0d6;
+    --accent:#6cc0ff;--accent2:#ffd166;--ok:#52e6a4;--bad:#ff6b6b;--line:#2a3055;
+    --shadow:0 10px 24px rgba(0,0,0,.35);--r:14px
+  }
+  *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);
+    background:radial-gradient(1200px 700px at 80% -10%, rgba(108,192,255,.15),transparent 60%),
+               radial-gradient(900px 600px at -10% 100%, rgba(255,209,102,.13),transparent 60%),var(--bg);}
+  header{position:sticky;top:0;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(14,18,34,.9),rgba(14,18,34,.55));z-index:5}
+  .wrap{max-width:1100px;margin:0 auto;padding:14px}
+  .row{display:flex;gap:18px}.col{display:flex;flex-direction:column;gap:14px}.grow{flex:1}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+  .pad{padding:16px}
+  .brand{display:flex;gap:10px;align-items:center;font-weight:800}
+  .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid var(--line)}
+  .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:12px 15px;border-radius:12px;
+    border:1px solid var(--line);background:linear-gradient(180deg,rgba(108,192,255,.12),rgba(108,192,255,.06));
+    color:var(--text);cursor:pointer;font-weight:700;user-select:none}
+  .btn.primary{background:linear-gradient(180deg,var(--accent),#4fb4ff);border-color:transparent;color:#07121e}
+  .btn.danger{background:linear-gradient(180deg,var(--bad),#ff8a8a);border-color:transparent;color:#2b0b0b}
+  .badge{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:12px}
+  .lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .lesson{padding:14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.04))}
+  .lesson:hover{outline:2px solid rgba(108,192,255,.35)}
+  .progress{height:10px;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#0b0f20}
+  .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .35s}
+  .qstem{font-size:20px;font-weight:800}
+  .qnote{color:var(--muted);font-size:14px}
+  .choices{display:grid;gap:10px;margin-top:6px}
+  .choice{padding:14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.04));font-weight:700}
+  .choice.correct{border-color:rgba(82,230,164,.85);background:rgba(82,230,164,.12)}
+  .choice.wrong{border-color:rgba(255,107,107,.85);background:rgba(255,107,107,.12)}
+  input[type="text"]{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:16px;width:100%}
+  .feedback{display:none;margin-top:8px;padding:12px;border-radius:12px;border:1px solid rgba(82,230,164,.45);background:rgba(82,230,164,.12);font-weight:700}
+  .feedback.bad{border-color:rgba(255,107,107,.5);background:rgba(255,107,107,.12)}
+  footer{opacity:.85;text-align:center;color:var(--muted);padding:22px 0}
+  @media (max-width:980px){.row{flex-direction:column}.lesson-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#6cc0ff"/><stop offset="1" stop-color="#ffd166"/></linearGradient></defs>
+        <rect x="24" y="4" width="16" height="18" rx="3" fill="url(#g)" stroke="#2a3055"/>
+        <rect x="18" y="20" width="28" height="10" rx="3" fill="#cfe0ff" stroke="#2a3055"/>
+        <rect x="29" y="30" width="6" height="18" rx="2" fill="#c7a16a" stroke="#2a3055"/>
+        <rect x="26" y="46" width="12" height="6" rx="3" fill="#9b7647" stroke="#2a3055"/>
+      </svg>
+      Thorlango <span style="opacity:.6;font-weight:700">— Learn with Thunder</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="pill">⚡ XP: <b id="xpVal">0</b></span>
+      <span class="pill">🔥 Streak: <b id="streakVal">0</b></span>
+      <span class="pill">💖 Hearts: <b id="heartsVal">5</b></span>
+      <button class="btn" id="refillBtn">+3 💖</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" style="padding-top:18px">
+  <div class="row">
+    <aside style="width:290px;flex:0 0 290px" class="col">
+      <div class="card pad">
+        <div style="display:flex;justify-content:space-between"><span>Daily Goal</span><b id="goalVal">30</b></div>
+        <div style="display:flex;justify-content:space-between"><span>Today’s XP</span><b id="todayXp">0</b></div>
+        <div style="display:flex;justify-content:space-between"><span>Lessons Done</span><b id="lessonsDone">0</b></div>
+      </div>
+      <div class="card pad">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <b>Quick Tips</b><span class="badge">📝 PEEL</span>
+        </div>
+        <ul style="margin:0;padding-left:16px;color:var(--muted);line-height:1.55">
+          <li><b>P</b>oint: clear topic sentence</li>
+          <li><b>E</b>vidence: short quote/example</li>
+          <li><b>E</b>xplain: how it proves it</li>
+          <li><b>L</b>ink: back to question</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="grow col">
+      <div class="card pad" id="hubCard">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div>
+            <div class="badge">🗡️ Norse Basics</div>
+            <h2 style="margin:.35em 0 0">Choose a Lesson</h2>
+            <p class="qnote">Earn XP, keep your streak, and master Thor-themed vocab.</p>
+          </div>
+          <button class="btn primary" id="continueBtn">▶️ Continue</button>
+        </div>
+        <div class="lesson-grid" id="lessonGrid" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card pad" id="quizCard" style="display:none">
+        <div class="badge" id="lessonBadge">Lesson</div>
+        <div class="qstem" id="qStem">Question text</div>
+        <div class="qnote" id="qNote"></div>
+        <div id="quizArea" class="col"></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <div class="progress" style="flex:1"><span id="progFill"></span></div>
+          <button class="btn" id="skipBtn">Skip</button>
+          <button class="btn primary" id="checkBtn">Check</button>
+        </div>
+        <div class="feedback" id="goodFb">✅ Nice! +10 XP</div>
+        <div class="feedback bad" id="badFb">❌ Not quite. −1 heart</div>
+      </div>
+
+      <div class="card pad" id="summaryCard" style="display:none">
+        <h3>Lesson complete 🎉</h3>
+        <p class="qnote" id="summaryText"></p>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn primary" id="againBtn">Do again</button>
+          <button class="btn" id="backBtn">Back to lessons</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>All progress saved locally — no accounts needed.</footer>
+
+<script>
+/* ======= STORAGE & STATE ======= */
+const store={get:(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const day=()=>new Date().toISOString().slice(0,10);
+const state={
+  xp:store.get('xp',0), hearts:store.get('hearts',5), streak:store.get('streak',0),
+  last:store.get('last',day()), todayXp:store.get('tx:'+day(),0),
+  lessonsDone:store.get('done',0), goal:store.get('goal',30),
+  lastLesson:store.get('lastLesson','l1')
+};
+if(state.last!==day()){ // new day: streak logic
+  const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  if(state.last===yest && state.todayXp>0) state.streak++; else state.streak=0;
+  state.todayXp=0; state.last=day();
+  store.set('streak',state.streak); store.set('tx:'+day(),state.todayXp); store.set('last',state.last);
+}
+function save(){
+  store.set('xp',state.xp); store.set('hearts',state.hearts); store.set('streak',state.streak);
+  store.set('tx:'+day(),state.todayXp); store.set('done',state.lessonsDone); store.set('goal',state.goal);
+  store.set('lastLesson',state.lastLesson);
+}
+
+/* ======= UI HOOKS ======= */
+const xpVal=$('#xpVal'), heartsVal=$('#heartsVal'), streakVal=$('#streakVal'), todayXp=$('#todayXp'), lessonsDone=$('#lessonsDone'), goalVal=$('#goalVal');
+const hubCard=$('#hubCard'), quizCard=$('#quizCard'), summaryCard=$('#summaryCard'), lessonGrid=$('#lessonGrid');
+const qStem=$('#qStem'), qNote=$('#qNote'), quizArea=$('#quizArea'), progFill=$('#progFill'), goodFb=$('#goodFb'), badFb=$('#badFb'), badge=$('#lessonBadge');
+$('#refillBtn').onclick=()=>{state.hearts=Math.min(5,state.hearts+3); renderHeader(); save()};
+$('#continueBtn').onclick=()=>startLesson(state.lastLesson);
+
+/* ======= LESSON DATA ======= */
+const LESSONS=[
+  {id:'l1',title:'Greetings of Asgard',emoji:'🛡️',desc:'Start with simple Norse words.',
+   q:[
+     {type:'mc',stem:'What does “skál” mean when toasting?',note:'Pick the best meaning.',choices:['Storm','Cheers','Sword','Raven'],ans:1},
+     {type:'in',stem:'Thor is the god of ______.',note:'One word.',ans:'thunder'},
+     {type:'mc',stem:'“Mjölnir” is…',note:'Thor would know this.',choices:['A longship','Thor’s hammer','A mountain','A feast'],ans:1},
+     {type:'in',stem:'Translate: “Asgard” is realm of the ______.',note:'One word.',ans:'gods'}
+   ]},
+  {id:'l2',title:'Storm & Strength',emoji:'⚡',desc:'Power words and places.',
+   q:[
+     {type:'mc',stem:'Bifröst is a ______ bridge.',note:'Color!',choices:['Stone','Iron','Rainbow','Ice'],ans:2},
+     {type:'in',stem:'Odin’s raven: type one — ______.',note:'Huginn or Muninn.',ans:'huginn'},
+     {type:'mc',stem:'Heimdall is the guardian of…',note:'Gatekeeper.',choices:['Valhalla','Bifröst','Jötunheim','Midgard'],ans:1}
+   ]},
+  {id:'l3',title:'Lore & Places',emoji:'🏔️',desc:'Bits of myth.',
+   q:[
+     {type:'mc',stem:'Valhalla welcomes…',note:'Who goes there?',choices:['Farmers','Fallen warriors','Giants','Skalds'],ans:1},
+     {type:'in',stem:'A Viking originally meant a sea ______.',note:'One word.',ans:'raider'}
+   ]}
+];
+
+/* ======= RENDER HUB ======= */
+function renderHeader(){
+  xpVal.textContent=state.xp; heartsVal.textContent=state.hearts; streakVal.textContent=state.streak;
+  todayXp.textContent=state.todayXp; lessonsDone.textContent=state.lessonsDone; goalVal.textContent=state.goal;
+}
+function renderLessons(){
+  lessonGrid.innerHTML='';
+  LESSONS.forEach((L,i)=>{
+    const card=div('lesson',`
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:22px">${L.emoji}</div>
+        <span class="badge">Lesson ${i+1}</span>
+      </div>
+      <h3 style="margin:.4em 0 .1em">${L.title}</h3>
+      <p class="qnote" style="margin:.1em 0 .6em">${L.desc}</p>
+      <div class="progress"><span style="width:${progressOf(L.id)}%"></span></div>
+    `);
+    card.onclick=()=>startLesson(L.id);
+    lessonGrid.appendChild(card);
+  });
+}
+function progressOf(id){
+  const done=store.get('p:'+id,0); const total=LESSONS.find(x=>x.id===id).q.length;
+  return Math.round((done/total)*100);
+}
+
+/* ======= QUIZ ENGINE ======= */
+let cur=null; // {L, idx}
+function startLesson(id){
+  state.lastLesson=id; save();
+  cur={L:LESSONS.find(x=>x.id===id), idx:0};
+  store.set('p:'+id,0);
+  hubCard.style.display='none'; summaryCard.style.display='none'; quizCard.style.display='';
+  badge.textContent=cur.L.title; loadQ();
+}
+
+function loadQ(){
+  goodFb.style.display='none'; badFb.style.display='none';
+  const q=cur.L.q[cur.idx];
+  qStem.textContent=q.stem; qNote.textContent=q.note||'';
+  quizArea.innerHTML='';
+  if(q.type==='mc'){
+    const box=div('choices'); q.choices.forEach((c,i)=>{
+      const el=div('choice',c); el.onclick=()=>selectMC(i,el,q.ans); box.appendChild(el);
+    }); quizArea.appendChild(box);
+  }else{
+    const row=div('',`<input id="ansInput" type="text" placeholder="Type answer…" autocomplete="off">`);
+    quizArea.appendChild(row);
+  }
+  progFill.style.width=(cur.idx/cur.L.q.length*100)+'%';
+}
+
+let selected=-1;
+function selectMC(i,el,ans){
+  [...document.querySelectorAll('.choice')].forEach(x=>x.classList.remove('correct','wrong'));
+  selected=i; el.classList.add(i===ans?'correct':'wrong');
+}
+
+$('#skipBtn').onclick=()=>advance(false);
+$('#checkBtn').onclick=()=>{
+  const q=cur.L.q[cur.idx];
+  let ok=false;
+  if(q.type==='mc'){ ok=(selected===q.ans) }
+  else{
+    const v=$('#ansInput').value.trim().toLowerCase();
+    ok=(v===String(q.ans).toLowerCase());
+  }
+  result(ok);
+};
+
+function result(ok){
+  if(ok){
+    goodFb.style.display='block'; badFb.style.display='none';
+    addXp(10);
+    let done=store.get('p:'+cur.L.id,0); store.set('p:'+cur.L.id, Math.min(cur.L.q.length, done+1));
+  }else{
+    badFb.style.display='block'; goodFb.style.display='none';
+    state.hearts=Math.max(0,state.hearts-1);
+    if(state.hearts===0){ // fail lesson
+      save(); renderHeader();
+      endLesson(false); return;
+    }
+  }
+  renderHeader(); setTimeout(()=>advance(true), 650);
+}
+function advance(fromCheck){
+  selected=-1;
+  if(cur.idx<cur.L.q.length-1){ cur.idx++; loadQ(); }
+  else endLesson(true);
+}
+function endLesson(passed){
+  quizCard.style.display='none'; summaryCard.style.display='';
+  const pct=progressOf(cur.L.id);
+  $('#summaryText').textContent= passed ? `You finished ${cur.L.title}. Progress: ${pct}%` : `You ran out of hearts. Try again!`;
+  if(passed){ state.lessonsDone++; save(); renderLessons(); }
+}
+$('#againBtn').onclick=()=>startLesson(cur?.L.id||LESSONS[0].id);
+$('#backBtn').onclick=()=>{quizCard.style.display='none'; summaryCard.style.display='none'; hubCard.style.display=''; renderLessons();};
+
+/* ======= XP / HEARTS ======= */
+function addXp(n){
+  state.xp+=n; state.todayXp+=n; save();
+}
+$('#heartsVal').title='Lose a heart on wrong answers. Refill to keep going.';
+
+/* ======= HELPERS ======= */
+function $(q){return document.querySelector(q)}
+function div(cls='',html=''){const d=document.createElement('div'); if(cls)d.className=cls; d.innerHTML=html; return d}
+
+/* init */
+renderHeader(); renderLessons();
+</script>
+</body>
+</html>
